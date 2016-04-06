@@ -1,0 +1,46 @@
+---
+
+- hosts: all
+  remote_user: root
+  vars:
+    locale: ja_JP.UTF-8
+
+  tasks:
+    - name: apt upgrade
+      apt:  upgrade=full update_cache=yes cache_valid_time=3600
+
+    - name: generate locale
+      locale_gen: name={{ locale }} state=present
+    - name: set locale
+      lineinfile: dest=/etc/default/locale regexp='^LANG=' line='LANG={{ locale }}'
+
+    - name: install pip and libs
+      apt:  name={{ item }} state=present
+      with_items:
+        - python3-pip
+        - libpng-dev
+        - libfreetype6-dev
+        - libxft-dev
+        - libopenblas-dev
+        - liblapack-dev
+        - gfortran
+
+    - name: install virtualenv
+      pip: name=virtualenv executable=pip3 state=present
+    - name: install jupyter
+      pip: name={{ item }} state=present virtualenv=/opt/jupyter
+      with_items:
+        - pandas
+        - matplotlib
+        - scipy
+        - scikit-learn
+        - jupyter
+        # - tensorflow
+
+        
+
+
+
+
+
+
