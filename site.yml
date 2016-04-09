@@ -14,6 +14,9 @@
     - name: set locale
       lineinfile: dest=/etc/default/locale regexp='^LANG=' line='LANG={{ locale }}'
 
+    - name: adduser jupyter
+      user: name=jupyter system=yes
+
     - name: install pip and libs
       apt:  name={{ item }} state=present
       with_items:
@@ -27,6 +30,7 @@
 
     - name: install virtualenv
       pip: name=virtualenv executable=pip3 state=present
+
     - name: install jupyter
       pip: name={{ item }} state=present virtualenv=/opt/jupyter
       with_items:
@@ -35,12 +39,26 @@
         - scipy
         - scikit-learn
         - jupyter
-        # - tensorflow
 
-        
+    - name: Install tensorflow
+      command: '/opt/jupyter/bin/pip3 install --upgrade https://storage.googleapis.com/tensorflow/linux/cpu/tensorflow-0.7.1-cp34-none-linux_x86_64.whl'
 
+    - name: jupyter directories
+      file: path={{ item.path }} state=directory owner={{ item.owner }} group={{ item.group }} mode=0755
+      with_items:
+        - path:   /etc/opt/jupyter
+          owner:  root
+          group:  root
+        - path:   /var/opt/jupyter/notebooks
+          owner:  jupyter
+          group:  jupyter
 
+    - name: copy init script
+      copy: src=files/jupyter dest=/etc/init.d/jupyter mode=755
 
+    - name: copy service config
+      copy: src=files/jupyter.service dest=/etc/systemd/system/jupyter.service
 
-
+    - name: copy jupyter config
+      copy: src=files/jupyter_notebook_config.py dest=/etc/opt/jupyter/jupyter_notebook_config.py
 
