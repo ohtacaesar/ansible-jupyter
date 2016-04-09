@@ -11,8 +11,18 @@
 
     - name: generate locale
       locale_gen: name={{ locale }} state=present
+
     - name: set locale
       lineinfile: dest=/etc/default/locale regexp='^LANG=' line='LANG={{ locale }}'
+
+    - name: install unzip
+      apt:  name=unzip state=present
+
+    - name: download ipa font
+      get_url: url=http://dl.ipafont.ipa.go.jp/IPAexfont/IPAexfont00301.zip dest=/tmp/IPAexfont00301.zip
+
+    - name: unzip font archive
+      unarchive: src=/tmp/IPAexfont00301.zip dest=/usr/share/fonts/truetype copy=no
 
     - name: adduser jupyter
       user: name=jupyter system=yes
@@ -47,6 +57,9 @@
       file: path={{ item.path }} state=directory owner={{ item.owner }} group={{ item.group }} mode=0755
       with_items:
         - path:   /etc/opt/jupyter
+          owner:  jupyter
+          group:  jupyter
+        - path:   /var/opt
           owner:  root
           group:  root
         - path:   /var/opt/jupyter/notebooks
@@ -54,11 +67,13 @@
           group:  jupyter
 
     - name: copy init script
-      copy: src=files/jupyter dest=/etc/init.d/jupyter mode=755
+      copy: src=files/jupyter dest=/etc/init.d/ mode=755
 
     - name: copy service config
-      copy: src=files/jupyter.service dest=/etc/systemd/system/jupyter.service
+      copy: src=files/jupyter.service dest=/etc/systemd/system/
 
     - name: copy jupyter config
-      copy: src=files/jupyter_notebook_config.py dest=/etc/opt/jupyter/jupyter_notebook_config.py
-
+      copy: src={{ item.src }} dest=/etc/opt/jupyter/ owner=jupyter group=jupyter
+      with_items:
+        - files/jupyter_notebook_config.py
+        - files/matplotlibrc
