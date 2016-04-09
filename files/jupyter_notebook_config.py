@@ -1,8 +1,5 @@
 # Configuration file for jupyter-notebook.
 
-c.NotebookApp.open_browser = False
-c.NotebookApp.notebook_dir = '/var/opt/jupyter/notebooks'
-
 #------------------------------------------------------------------------------
 # Configurable configuration
 #------------------------------------------------------------------------------
@@ -186,13 +183,13 @@ c.NotebookApp.notebook_dir = '/var/opt/jupyter/notebooks'
 # c.NotebookApp.mathjax_url = ''
 
 # The directory to use for notebooks and kernels.
-# c.NotebookApp.notebook_dir = ''
+c.NotebookApp.notebook_dir = '/var/opt/jupyter/notebooks'
 
 # Whether to open in a browser after starting. The specific browser used is
 # platform dependent and determined by the python standard library `webbrowser`
 # module, unless it is overridden using the --browser (NotebookApp.browser)
 # configuration option.
-# c.NotebookApp.open_browser = True
+c.NotebookApp.open_browser = False
 
 # Hashed password to use for web authentication.
 #
