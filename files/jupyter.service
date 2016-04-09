@@ -1,0 +1,11 @@
+[Unit]
+Description=Jupyter Notebook
+
+[Service]
+Type=simple
+PIDFile=/var/run/jupyter.pid
+ExecStart=/etc/init.d/jupyter start
+ExecStop=/etc/init.d/jupyter stop
+
+[Install]
+WantedBy=multi-user.target
